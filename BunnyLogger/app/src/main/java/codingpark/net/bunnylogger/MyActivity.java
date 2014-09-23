@@ -4,14 +4,29 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 
 
 public class MyActivity extends Activity {
 
+    private Button bt           = null;
+    private BunnyLog log        = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my);
+        setContentView(R.layout.main);
+
+        log = BunnyLog.getInstance(this);
+        log.d(MyActivity.class, "log clicked!");
+        bt = (Button)findViewById(R.id.button);
+        bt.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                log.d(MyActivity.class, "log clicked!");
+            }
+        });
     }
 
 
