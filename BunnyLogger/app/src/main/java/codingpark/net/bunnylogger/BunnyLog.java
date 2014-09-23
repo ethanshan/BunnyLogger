@@ -162,7 +162,6 @@ public class BunnyLog {
     }
 
     public void w(Class c, String msg) {
-
         switch (FUNCTION) {
             case FUNC_ANDROID_LOG:
                 Log.d(c.getName(), msg);
@@ -171,6 +170,29 @@ public class BunnyLog {
                 Calendar cal = Calendar.getInstance();
                 cal.setTimeInMillis(System.currentTimeMillis());
                 log.warning(cal.getTime().toString() + " -->--> "
+                        + c.getName() + " -->--> " + msg);
+                break;
+            case FUNC_NETWORK_LOG:
+                break;
+            default:
+                return;
+        }
+    }
+
+    /**
+     *
+     * @param c
+     * @param msg
+     */
+    public void v(Class c, String msg) {
+        switch (FUNCTION) {
+            case FUNC_ANDROID_LOG:
+                Log.d(c.getName(), msg);
+                break;
+            case FUNC_LOCAL_LOG:
+                Calendar cal = Calendar.getInstance();
+                cal.setTimeInMillis(System.currentTimeMillis());
+                log.fine(cal.getTime().toString() + " -->--> "
                         + c.getName() + " -->--> " + msg);
                 break;
             case FUNC_NETWORK_LOG:

@@ -24,7 +24,11 @@ public class MyActivity extends Activity {
         bt.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                log.d(MyActivity.class, "log clicked!");
+                log.e(MyActivity.class, "error");
+                log.w(MyActivity.class, "warning");
+                log.i(MyActivity.class, "info");
+                log.d(MyActivity.class, "debug");
+                log.v(MyActivity.class, "verbose");
             }
         });
     }
