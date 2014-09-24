@@ -18,14 +18,15 @@ import java.util.logging.SimpleFormatter;
  * A log wrapper, support convenient function
  *  1. Store log to local file system
  *  2. Use android Log or customer Log free switch
+ *  3. Use network transfer log to remote server
  * Java log map Android log
  * Log.d
- *  ASSERT      -->     Level.FINEST
- *	DEBUG       -->     Level.FINE
  *  ERROR       -->     Level.SEVERE
- *	INFO        -->     Level.INFO
- *  VERBOSE     -->     Level.FINNER
- *	WARN        -->     Level.WARNING
+ *  WARN        -->     Level.WARNING
+ *  DEBUG       -->     Level.CONFIG
+ *  INFO        -->     Level.INFO
+ *  VERBOSE     -->     Level.FINE
+ *  ASSERT      -->
  */
 public class BunnyLog {
 
@@ -36,14 +37,24 @@ public class BunnyLog {
     private static Context mContext         = null;
     private static final String TAG         = "BunnyLog";
 
+    /**
+     * Android internal logging mechanism
+     */
     public static final int FUNC_ANDROID_LOG    = 0;
+    /**
+     * Java environment support logging mechanism,
+     * Store log to local file system
+     */
     public static final int FUNC_LOCAL_LOG      = 1;
     // TODO future need support transfer log to server
+    /**
+     * Java environment support logging mechanism,
+     * transfer log to remote server.
+     */
     public static final int FUNC_NETWORK_LOG    = 2;
     // Configure which log function to use, default use Android log
     // TODO The configuration need read from configure file
-    //public static int FUNCTION                  = FUNC_ANDROID_LOG;
-    public static int FUNCTION                  = FUNC_LOCAL_LOG;
+    private static int function                     = FUNC_LOCAL_LOG;
 
     private static FileHandler fileTxt          = null;
     private static SimpleFormatter formatterTxt = null;
@@ -51,7 +62,7 @@ public class BunnyLog {
 
 
     private BunnyLog() {
-        if (FUNCTION == FUNC_LOCAL_LOG) {
+        if (function == FUNC_LOCAL_LOG) {
             // Create log file
             // Exp: /data/data/codingpark.net.bunnylogger/files/bunnylogger/2014-09-23-11-27-59.log
             Calendar cal = Calendar.getInstance();
@@ -98,24 +109,27 @@ public class BunnyLog {
         return instance;
     }
 
-    public static BunnyLog getInstance(Context context) {
+    public static BunnyLog getInstance(Context context, int func) {
         mContext = context;
+        function = func;
         if (instance == null) {
             instance = new BunnyLog();
         }
         return instance;
     }
 
+    /**
+     * Debug level info
+     * @param c
+     * @param msg
+     */
     public void d(Class c, String msg) {
-        switch (FUNCTION) {
+        switch (function) {
             case FUNC_ANDROID_LOG:
                 Log.d(c.getName(), msg);
                 break;
             case FUNC_LOCAL_LOG:
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(System.currentTimeMillis());
-                log.config(cal.getTime().toString() + " -->--> "
-                        + c.getName() + " -->--> " + msg);
+                log.config(c.getName() + "\t\t\t" + msg);
                 break;
             case FUNC_NETWORK_LOG:
                 break;
@@ -125,52 +139,18 @@ public class BunnyLog {
     }
 
 
+    /**
+     * Info level info
+     * @param c
+     * @param msg
+     */
     public void i(Class c, String msg) {
-        switch (FUNCTION) {
+        switch (function) {
             case FUNC_ANDROID_LOG:
                 Log.d(c.getName(), msg);
                 break;
             case FUNC_LOCAL_LOG:
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(System.currentTimeMillis());
-                log.info(cal.getTime().toString() + " -->--> "
-                        + c.getName() + " -->--> " + msg);
-                break;
-            case FUNC_NETWORK_LOG:
-                break;
-            default:
-                return;
-        }
-    }
-
-    public void e(Class c, String msg) {
-        switch (FUNCTION) {
-            case FUNC_ANDROID_LOG:
-                Log.d(c.getName(), msg);
-                break;
-            case FUNC_LOCAL_LOG:
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(System.currentTimeMillis());
-                log.severe(cal.getTime().toString() + " -->--> "
-                        + c.getName() + " -->--> " + msg);
-                break;
-            case FUNC_NETWORK_LOG:
-                break;
-            default:
-                return;
-        }
-    }
-
-    public void w(Class c, String msg) {
-        switch (FUNCTION) {
-            case FUNC_ANDROID_LOG:
-                Log.d(c.getName(), msg);
-                break;
-            case FUNC_LOCAL_LOG:
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(System.currentTimeMillis());
-                log.warning(cal.getTime().toString() + " -->--> "
-                        + c.getName() + " -->--> " + msg);
+                log.info(c.getName() + "\t\t\t" + msg);
                 break;
             case FUNC_NETWORK_LOG:
                 break;
@@ -180,20 +160,57 @@ public class BunnyLog {
     }
 
     /**
-     *
+     * Error level info
      * @param c
      * @param msg
      */
-    public void v(Class c, String msg) {
-        switch (FUNCTION) {
+    public void e(Class c, String msg) {
+        switch (function) {
             case FUNC_ANDROID_LOG:
                 Log.d(c.getName(), msg);
                 break;
             case FUNC_LOCAL_LOG:
-                Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(System.currentTimeMillis());
-                log.fine(cal.getTime().toString() + " -->--> "
-                        + c.getName() + " -->--> " + msg);
+                log.severe(c.getName() + "\t\t\t" + msg);
+                break;
+            case FUNC_NETWORK_LOG:
+                break;
+            default:
+                return;
+        }
+    }
+
+    /**
+     * Warning level info
+     * @param c
+     * @param msg
+     */
+    public void w(Class c, String msg) {
+        switch (function) {
+            case FUNC_ANDROID_LOG:
+                Log.d(c.getName(), msg);
+                break;
+            case FUNC_LOCAL_LOG:
+                log.warning(c.getName() + "\t\t\t" + msg);
+                break;
+            case FUNC_NETWORK_LOG:
+                break;
+            default:
+                return;
+        }
+    }
+
+    /**
+     * Verbose level info
+     * @param c
+     * @param msg
+     */
+    public void v(Class c, String msg) {
+        switch (function) {
+            case FUNC_ANDROID_LOG:
+                Log.d(c.getName(), msg);
+                break;
+            case FUNC_LOCAL_LOG:
+                log.fine(c.getName() + "\t\t\t" + msg);
                 break;
             case FUNC_NETWORK_LOG:
                 break;

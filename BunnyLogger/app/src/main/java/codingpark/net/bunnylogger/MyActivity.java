@@ -18,7 +18,7 @@ public class MyActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
 
-        log = BunnyLog.getInstance(this);
+        log = BunnyLog.getInstance(this, BunnyLog.FUNC_LOCAL_LOG);
         log.d(MyActivity.class, "log clicked!");
         bt = (Button)findViewById(R.id.button);
         bt.setOnClickListener(new View.OnClickListener() {
